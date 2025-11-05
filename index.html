@@ -381,14 +381,18 @@ function vignetteAdaptive(data,w,h,amt,letterbox){
 
 // ===== Core process + blend
 function process(out,src,w,h){
+  const outBuf = out && out.data ? out.data : out;
+  const srcBuf = src && src.data ? src.data : src;
+  if(!outBuf || !srcBuf) return;
+
   const bAdd=P.brightness*1.0;
   const contrast=1+(P.contrast/100)*0.9;
   const satBase=1+(P.saturation/100);
   const tempR=1+(P.temperature/100)*.25;
   const tempB=1-(P.temperature/100)*.18;
 
-  for(let i=0;i<src.length;i+=4){
-    let r=src[i], g=src[i+1], b=src[i+2];
+  for(let i=0;i<srcBuf.length;i+=4){
+    let r=srcBuf[i], g=srcBuf[i+1], b=srcBuf[i+2];
     r*=tempR; b*=tempB;
     r=(r-128)*contrast+128+bAdd;
     g=(g-128)*contrast+128+bAdd;
@@ -424,12 +428,12 @@ function process(out,src,w,h){
       }
     }
 
-    out[i]=clamp(r); out[i+1]=clamp(g); out[i+2]=clamp(b); out[i+3]=255;
+    outBuf[i]=clamp(r); outBuf[i+1]=clamp(g); outBuf[i+2]=clamp(b); outBuf[i+3]=255;
   }
 
-  if(P.sharpen>0) sharpen(out,w,h,P.sharpen/100);
-  if(P.skySmooth) skySmoothAdaptive(out,w,h);
-  if(P.grain>0)   grain(out,P.grain/100);
+  if(P.sharpen>0) sharpen(outBuf,w,h,P.sharpen/100);
+  if(P.skySmooth) skySmoothAdaptive(outBuf,w,h);
+  if(P.grain>0)   grain(outBuf,P.grain/100);
 }
 
 function blend(out,src,w,h,amt){
