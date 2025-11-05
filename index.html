@@ -6,51 +6,110 @@
 <title>Cinematic Engine 2.0+</title>
 <style>
   :root{
-    --bg:#0d0f14;--panel:#171a21;--text:#e6e6e6;--muted:#999;
-    --accent:#5edcff;--btn:#232837;--btn2:#1f2533;
+    --bg:#05070b;
+    --bg-alt:#0b111b;
+    --panel:#101724;
+    --panel-border:rgba(94,220,255,.18);
+    --text:#edf1ff;
+    --muted:#8891a8;
+    --accent:#5edcff;
+    --accent-soft:rgba(94,220,255,.16);
+    --shadow:0 24px 60px rgba(4,9,18,.55);
   }
-  *{box-sizing:border-box;font-family:system-ui,-apple-system,Segoe UI,Roboto}
-  body{margin:0;background:#0b0d12;color:var(--text);}
-  header{padding:16px 20px;border-bottom:1px solid #222;display:flex;align-items:center;gap:14px}
-  .wrap{display:grid;grid-template-columns:360px 1fr;gap:16px;padding:16px;}
-  .panel{background:var(--panel);border:1px solid #232632;border-radius:12px;padding:14px}
-  .panel h3{margin:10px 0;font-size:15px;color:#dfe7ff}
-  .small{font-size:11px;color:var(--muted)}
-  button{background:var(--btn);border:1px solid #2b3142;color:#e9f1ff;padding:7px 10px;border-radius:8px;font-size:13px;cursor:pointer}
-  button:hover{background:var(--btn2)}
+  *{box-sizing:border-box;font-family:"Inter","Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif}
+  body{margin:0;min-height:100vh;background:radial-gradient(circle at 10% 0%,#17294d 0%,#05080f 50%,#020306 100%);color:var(--text);display:flex;flex-direction:column;align-items:center;position:relative;overflow-x:hidden}
+  body::before{content:"";position:fixed;inset:0;background-image:linear-gradient(115deg,rgba(94,220,255,.12) 0%,rgba(94,220,255,0) 42%),radial-gradient(circle at 20% -10%,rgba(94,220,255,.18),transparent 60%);opacity:.85;pointer-events:none;z-index:0}
+  main{width:100%;max-width:1240px;padding:32px clamp(16px,4vw,44px) 52px;position:relative;z-index:1}
+  header{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;padding:24px clamp(18px,3vw,32px);margin-bottom:30px;background:rgba(16,23,36,.78);border:1px solid var(--panel-border);border-radius:22px;box-shadow:var(--shadow);backdrop-filter:blur(18px)}
+  header .title-block{display:flex;flex-direction:column;gap:6px}
+  header .eyebrow{font-size:12px;letter-spacing:.32em;text-transform:uppercase;color:var(--muted)}
+  header strong{font-size:30px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;display:block}
+  header strong span{color:var(--accent);text-shadow:0 0 18px var(--accent-soft)}
+  header .subtitle{font-size:14px;color:var(--muted);max-width:360px;line-height:1.5}
+  header .meta{display:flex;flex-direction:column;gap:12px;align-items:flex-end;text-align:right}
+  header .pill{align-self:flex-end;padding:4px 12px;border-radius:999px;border:1px solid rgba(94,220,255,.32);color:var(--accent);font-size:11px;letter-spacing:.22em;text-transform:uppercase;background:rgba(94,220,255,.08)}
+  header .tagline{font-size:14px;color:#c7d6ff;max-width:280px;line-height:1.55}
+  .wrap{display:grid;grid-template-columns:minmax(320px,360px) 1fr;gap:26px}
+  .panel{position:relative;background:linear-gradient(155deg,rgba(16,23,36,.94),rgba(8,13,22,.9));border-radius:22px;border:1px solid rgba(255,255,255,.04);box-shadow:var(--shadow);padding:22px;overflow:hidden}
+  .panel::before{content:"";position:absolute;inset:-52% -40% auto auto;width:58%;height:140%;background:radial-gradient(circle at top,rgba(94,220,255,.28),transparent 68%);opacity:.32;transform:rotate(-8deg);pointer-events:none}
+  .panel h3{margin:18px 0 12px;font-size:14px;letter-spacing:.16em;text-transform:uppercase;color:#c7d6ff}
+  .panel h3:first-of-type{margin-top:4px}
+  .small{font-size:12px;color:var(--muted)}
+  .section-heading{margin:20px 0 10px;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:#9fb5ff}
+  .btns{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:18px}
+  button,.btn{border:none;outline:none;display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 15px;border-radius:12px;font-size:13px;font-weight:500;background:linear-gradient(135deg,rgba(35,46,70,.9),rgba(27,34,52,.82));border:1px solid rgba(94,220,255,.16);color:var(--text);cursor:pointer;transition:transform .18s ease,box-shadow .18s ease,background .18s ease;position:relative;z-index:1}
+  button::after,.btn::after{content:"";position:absolute;inset:0;border-radius:inherit;background:linear-gradient(135deg,rgba(94,220,255,.14),rgba(94,220,255,0));opacity:0;transition:opacity .18s ease;z-index:-1}
+  button:hover,.btn:hover{transform:translateY(-1px);box-shadow:0 12px 28px rgba(0,0,0,.35)}
+  button:hover::after,.btn:hover::after{opacity:1}
+  button:focus-visible,.btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+  button.ghost{background:rgba(20,27,43,.55);border:1px solid rgba(255,255,255,.08);color:var(--muted)}
+  button.accent,.btn.accent{background:linear-gradient(120deg,rgba(94,220,255,.24),rgba(94,220,255,.06));border:1px solid rgba(94,220,255,.42);color:var(--accent)}
+  label.btn{cursor:pointer}
   input[type=file]{display:none}
-  input[type=range]{width:100%}
-  .btns{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:8px}
-  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
-  .control{display:grid;grid-template-columns:140px 1fr 46px;gap:6px;align-items:center;margin:6px 0}
-  #canvasWrap{display:flex;align-items:center;justify-content:center;background:#000;border-radius:12px;overflow:hidden}
-  canvas{max-width:100%;max-height:80vh}
+  .field-label{display:flex;flex-direction:column;gap:6px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:12px}
+  .field-label.split{flex-direction:row;align-items:center;justify-content:space-between}
+  .field-label span{font-size:12px;letter-spacing:0;text-transform:none;color:var(--accent)}
+  select,input[type=range]{width:100%;background:rgba(12,18,30,.68);border:1px solid rgba(94,220,255,.18);border-radius:12px;color:var(--text);padding:10px 14px;font-size:13px;margin-top:6px;appearance:none}
+  select{background-image:url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="%235edcff" viewBox="0 0 20 20"><path d="M5.5 7.5 10 12l4.5-4.5" stroke="%235edcff" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>');background-repeat:no-repeat;background-position:right 14px center;background-size:16px;padding-right:38px}
+  select:focus-visible,input[type=range]:focus-visible{outline:2px solid rgba(94,220,255,.42);outline-offset:2px}
+  input[type=range]{height:6px;padding:0;background:linear-gradient(90deg,rgba(94,220,255,.3),rgba(94,220,255,0));margin:10px 0 4px}
+  input[type=range]::-webkit-slider-thumb{appearance:none;height:16px;width:16px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(94,220,255,.2);border:none}
+  input[type=range]::-moz-range-thumb{height:16px;width:16px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px rgba(94,220,255,.2);border:none}
+  input[type=range]::-webkit-slider-runnable-track{height:6px;border-radius:999px;background:rgba(255,255,255,.12)}
+  input[type=range]::-moz-range-track{height:6px;border-radius:999px;background:rgba(255,255,255,.12)}
+  .grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+  button.preset{flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;min-height:78px;padding:14px}
+  button.preset span{font-size:11px;color:var(--muted)}
+  .control{display:grid;grid-template-columns:150px 1fr 52px;gap:12px;align-items:center;margin:12px 0}
+  .control label{font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:#b4c3ff}
+  .control .small{justify-self:end;font-variant-numeric:tabular-nums;color:var(--accent)}
+  #origSizeInfo{margin-top:10px;color:var(--muted)}
+  #canvasWrap{display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at 25% 20%,rgba(94,220,255,.22),rgba(5,8,13,.94));border-radius:22px;border:1px solid rgba(94,220,255,.14);box-shadow:var(--shadow);overflow:hidden;min-height:420px;position:relative}
+  #canvasWrap::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,rgba(10,14,24,.45),transparent 35%,rgba(0,0,0,.35));mix-blend-mode:screen;opacity:.55;pointer-events:none}
+  #canvasWrap canvas{position:relative;max-width:100%;max-height:82vh;border-radius:18px;box-shadow:0 22px 45px rgba(0,0,0,.38)}
+  .ai-toggle-group{display:grid;gap:8px;margin-top:12px}
+  .ai-toggle-group label{display:flex;gap:10px;align-items:center;font-size:12px;color:var(--muted);cursor:pointer}
+  .ai-toggle-group input[type=checkbox]{appearance:none;width:18px;height:18px;border-radius:6px;border:1px solid rgba(94,220,255,.3);background:rgba(5,9,18,.8);position:relative;transition:all .18s ease}
+  .ai-toggle-group input[type=checkbox]:checked{background:var(--accent);border-color:var(--accent);box-shadow:0 0 0 3px rgba(94,220,255,.24)}
+  .ai-toggle-group input[type=checkbox]::after{content:"";position:absolute;inset:4px;border:2px solid #031726;border-top:none;border-left:none;transform:rotate(45deg);opacity:0}
+  .ai-toggle-group input[type=checkbox]:checked::after{opacity:1}
+  #beforeAfterBtn{width:100%;margin-top:16px;justify-content:center;font-size:12px;letter-spacing:.12em;text-transform:uppercase}
+  @media (max-width:1080px){.wrap{grid-template-columns:1fr}#canvasWrap{min-height:360px}}
+  @media (max-width:720px){header{flex-direction:column;align-items:flex-start;text-align:left}header .meta{align-items:flex-start;text-align:left}header .tagline{max-width:none}}
 </style>
 </head>
 <body>
+<main>
 <header>
-  <strong>Cinematic Engine 2.0+</strong>
-  <span class="small">Bloom • Teal–Orange • Clarity • Vignette • Letterbox • 4K Export</span>
+  <div class="title-block">
+    <div class="eyebrow">Realtime grading suite</div>
+    <strong>Cinematic Engine <span>2.0+</span></strong>
+    <div class="subtitle">Hollywood-inspired color grades with live cinematic finishing controls.</div>
+  </div>
+  <div class="meta">
+    <span class="pill">Cinematic Mode</span>
+    <div class="tagline">Bloom • Teal–Orange • Clarity • Vignette • Letterbox • 4K Export</div>
+  </div>
 </header>
 
 <div class="wrap">
   <div class="panel">
     <h3>1) Ảnh nguồn</h3>
     <div class="btns">
-      <label class="btn">📷 Chọn ảnh<input id="file" type="file" accept="image/*"></label>
-      <button id="reset" class="small">↺ Reset</button>
-      <button id="downloadPng">PNG</button>
-      <button id="downloadJpg">JPG</button>
+      <label class="btn accent">📷 Chọn ảnh<input id="file" type="file" accept="image/*"></label>
+      <button id="reset" class="ghost">↺ Reset</button>
+      <button id="downloadPng" class="accent">PNG</button>
+      <button id="downloadJpg" class="accent">JPG</button>
     </div>
-    <label class="small">Xuất ảnh:
+    <label class="field-label">Xuất ảnh
       <select id="exportSize">
         <option value="display">Theo màn hình</option>
         <option value="original">Kích thước gốc</option>
       </select>
-    </label><br>
-    <label class="small">JPG Quality: <span id="jpgQVal">92%</span></label>
+    </label>
+    <label class="field-label split">JPG Quality <span id="jpgQVal">92%</span></label>
     <input id="jpgQuality" type="range" min="70" max="100" value="92">
-    <div id="origSizeInfo" class="small" style="margin-top:6px"></div>
+    <div id="origSizeInfo" class="small"></div>
 
     <h3>2) Preset nhanh</h3>
     <div class="grid2">
@@ -63,18 +122,21 @@
     <h3>3) Tinh chỉnh</h3>
     <div id="controls"></div>
 
-    <div class="small" style="margin:8px 0 4px">AI modules</div>
-    <label class="small"><input type="checkbox" id="splitTone"> Split-Tone (thêm nhẹ)</label><br>
-    <label class="small"><input type="checkbox" id="skySmooth" checked> Sky Smooth + Grain AI</label><br>
-    <label class="small"><input type="checkbox" id="smartHL" checked> Smart Highlight Roll-off</label><br>
-    <label class="small"><input type="checkbox" id="depthSkin" checked> Depth-Protect Skin</label>
-    <button id="beforeAfterBtn" class="small" style="margin-top:8px">B/A: Xem ảnh gốc</button>
+    <div class="section-heading">AI Modules</div>
+    <div class="ai-toggle-group">
+      <label><input type="checkbox" id="splitTone"> Split-Tone (thêm nhẹ)</label>
+      <label><input type="checkbox" id="skySmooth" checked> Sky Smooth + Grain AI</label>
+      <label><input type="checkbox" id="smartHL" checked> Smart Highlight Roll-off</label>
+      <label><input type="checkbox" id="depthSkin" checked> Depth-Protect Skin</label>
+    </div>
+    <button id="beforeAfterBtn" class="ghost">B/A: Xem ảnh gốc</button>
   </div>
 
   <div class="panel" id="canvasWrap">
     <canvas id="c"></canvas>
   </div>
 </div>
+</main>
 
 <script>
 // ===== DOM
@@ -471,7 +533,7 @@ function draw(){
   if(showingOriginal){ ctx.putImageData(imageDataOriginal,0,0); return; }
   const w=c.width, h=c.height;
   const out=ctx.createImageData(imageDataOriginal);
-  process(out.data,imageDataOriginal.data,w,h);
+  process(out,imageDataOriginal,w,h);
   blend(out.data,imageDataOriginal.data,w,h,P.preset/100);
   // Cinematic extras
   if(P.clarity>0)      clarityLuma(out.data,w,h,P.clarity);
@@ -558,7 +620,7 @@ function download(fmt){
     octx.drawImage(originalBitmap,0,0,oc.width,oc.height);
     const src=octx.getImageData(0,0,oc.width,oc.height);
     const out=octx.createImageData(src);
-    process(out.data,src.data,oc.width,oc.height);
+    process(out,src,oc.width,oc.height);
     blend(out.data,src.data,oc.width,oc.height,P.preset/100);
     if(P.clarity>0)      clarityLuma(out.data,oc.width,oc.height,P.clarity);
     if(P.tealOrange>0)   tealOrangeRemap(out.data,P.tealOrange);
