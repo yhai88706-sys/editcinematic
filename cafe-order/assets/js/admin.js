@@ -92,7 +92,7 @@ function applyFilter() {
   renderOrdersList();
 
   if (state.selectedOrderId) {
-    const selected = state.orders.find((order) => order.id === state.selectedOrderId);
+    const selected = state.orders.find((order) => String(order.id) === state.selectedOrderId);
     if (selected) {
       renderOrderDetail(selected);
     } else {
@@ -111,7 +111,8 @@ function renderOrdersList() {
   elements.ordersList.innerHTML = '';
   state.filteredOrders.forEach((order) => {
     const article = document.createElement('article');
-    article.className = `order-card${order.id === state.selectedOrderId ? ' active' : ''}`;
+    const orderId = String(order.id);
+    article.className = `order-card${orderId === state.selectedOrderId ? ' active' : ''}`;
     article.innerHTML = `
       <div class="top-row">
         <span class="code">${order.code || 'Đơn #' + order.id}</span>
@@ -124,7 +125,7 @@ function renderOrdersList() {
       </div>
     `;
     article.addEventListener('click', () => {
-      state.selectedOrderId = order.id;
+      state.selectedOrderId = orderId;
       renderOrderDetail(order);
       renderOrdersList();
     });
@@ -211,8 +212,12 @@ function handleActionClick(event) {
   const button = event.target.closest('.order-actions .primary-btn');
   if (!button) return;
 
-  const orderId = Number(button.dataset.id);
+  const orderId = button.dataset.id;
   const status = button.dataset.status;
+  if (!orderId) {
+    alert('Không xác định được đơn hàng để cập nhật.');
+    return;
+  }
   updateOrderStatus(orderId, status);
 }
 
@@ -220,7 +225,7 @@ elements.orderDetail.addEventListener('click', handleActionClick);
 
 async function updateOrderStatus(orderId, status) {
   try {
-    const response = await fetch(`${API_BASE_URL}/orders/${orderId}`, {
+    const response = await fetch(`${API_BASE_URL}/orders/${encodeURIComponent(orderId)}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ status }),
@@ -229,9 +234,9 @@ async function updateOrderStatus(orderId, status) {
       throw new Error('Không thể cập nhật trạng thái');
     }
     await fetchOrders();
-    const updatedOrder = state.orders.find((order) => order.id === orderId);
+    const updatedOrder = state.orders.find((order) => String(order.id) === String(orderId));
     if (updatedOrder) {
-      state.selectedOrderId = updatedOrder.id;
+      state.selectedOrderId = String(updatedOrder.id);
       renderOrderDetail(updatedOrder);
     }
   } catch (error) {
