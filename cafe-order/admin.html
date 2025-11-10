@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Night Brew Cafe · Admin Orders</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="dark admin">
+  <div class="page admin-page">
+    <header class="admin-header">
+      <div>
+        <h1>Night Brew Cafe · Quản lý đơn</h1>
+        <p>Theo dõi & cập nhật trạng thái đơn hàng</p>
+      </div>
+      <div class="refresh-controls">
+        <button class="chip" id="refreshBtn">🔄 Làm mới</button>
+        <span class="timestamp">Cập nhật: <span id="lastUpdated">--</span></span>
+      </div>
+    </header>
+
+    <div class="admin-filters" id="statusFilters">
+      <button class="chip active" data-status="all">Tất cả</button>
+      <button class="chip" data-status="new">Mới</button>
+      <button class="chip" data-status="making">Đang pha</button>
+      <button class="chip" data-status="done">Hoàn thành</button>
+    </div>
+
+    <main class="admin-layout">
+      <section class="orders-list" id="ordersList">
+        <div class="empty">Đang tải đơn...</div>
+      </section>
+      <aside class="order-detail" id="orderDetail">
+        <div class="empty">Chọn một đơn để xem chi tiết</div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="assets/js/admin.js"></script>
+</body>
+</html>

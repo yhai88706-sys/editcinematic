@@ -1,0 +1,210 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Night Brew Signature",
+      "price": 55000,
+      "category": "coffee",
+      "description": "Cold brew ủ lạnh 18 giờ, hương chocolate và caramel nhẹ",
+      "image": "",
+      "isActive": true
+    },
+    {
+      "id": 2,
+      "name": "Espresso Macchiato",
+      "price": 45000,
+      "category": "coffee",
+      "description": "Espresso đậm đà với lớp bọt sữa mịn",
+      "image": "",
+      "isActive": true
+    },
+    {
+      "id": 3,
+      "name": "Latte Hạnh Nhân",
+      "price": 52000,
+      "category": "coffee",
+      "description": "Latte béo mịn với sữa hạnh nhân và chút siro vani",
+      "image": "",
+      "isActive": true
+    },
+    {
+      "id": 4,
+      "name": "Trà Oolong Cam Sả",
+      "price": 48000,
+      "category": "tea",
+      "description": "Trà oolong ủ lạnh kết hợp cam vàng và sả tươi",
+      "image": "",
+      "isActive": true
+    },
+    {
+      "id": 5,
+      "name": "Trà Hoa Đậu Biếc",
+      "price": 49000,
+      "category": "tea",
+      "description": "Trà hoa đậu biếc chuyển màu với chanh tươi",
+      "image": "",
+      "isActive": true
+    },
+    {
+      "id": 6,
+      "name": "Caramel Frappé",
+      "price": 59000,
+      "category": "iceblend",
+      "description": "Đá xay caramel béo mịn với kem tươi",
+      "image": "",
+      "isActive": true
+    },
+    {
+      "id": 7,
+      "name": "Matcha Cookie Frappe",
+      "price": 62000,
+      "category": "iceblend",
+      "description": "Matcha Nhật Bản xay cùng cookie giòn tan",
+      "image": "",
+      "isActive": true
+    },
+    {
+      "id": 8,
+      "name": "Bánh Cheesecake Nướng",
+      "price": 69000,
+      "category": "cake",
+      "description": "Cheesecake nướng mềm mịn, vị phô mai béo nhẹ",
+      "image": "",
+      "isActive": true
+    },
+    {
+      "id": 9,
+      "name": "Bánh Tiramisu Cacao",
+      "price": 72000,
+      "category": "cake",
+      "description": "Tiramisu với espresso đậm và lớp cacao phủ",
+      "image": "",
+      "isActive": true
+    },
+    {
+      "id": 10,
+      "name": "Sinh tố Xoài Dứa",
+      "price": 52000,
+      "category": "smoothie",
+      "description": "Sinh tố xoài dứa tươi mát, không thêm đường",
+      "image": "",
+      "isActive": true
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "code": "NB-20231118-101",
+      "orderType": "takeaway",
+      "tableNumber": null,
+      "note": "Gọi khi xong",
+      "status": "making",
+      "total": 157000,
+      "createdAt": "2023-11-18T14:25:00.000Z",
+      "items": [
+        {
+          "productId": 1,
+          "name": "Night Brew Signature",
+          "qty": 2,
+          "unitPrice": 55000,
+          "lineTotal": 110000,
+          "options": {
+            "size": "M",
+            "ice": "50%",
+            "sugar": "50%",
+            "note": "Không đá"
+          }
+        },
+        {
+          "productId": 8,
+          "name": "Bánh Cheesecake Nướng",
+          "qty": 1,
+          "unitPrice": 69000,
+          "lineTotal": 69000,
+          "options": {}
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "code": "NB-20231118-102",
+      "orderType": "table",
+      "tableNumber": "B5",
+      "note": "Mang thêm đường nâu",
+      "status": "new",
+      "total": 104000,
+      "createdAt": "2023-11-18T14:32:00.000Z",
+      "items": [
+        {
+          "productId": 3,
+          "name": "Latte Hạnh Nhân",
+          "qty": 1,
+          "unitPrice": 52000,
+          "lineTotal": 52000,
+          "options": {
+            "size": "L",
+            "ice": "30%",
+            "sugar": "30%",
+            "note": "Thêm quế"
+          }
+        },
+        {
+          "productId": 4,
+          "name": "Trà Oolong Cam Sả",
+          "qty": 1,
+          "unitPrice": 48000,
+          "lineTotal": 48000,
+          "options": {
+            "size": "M",
+            "ice": "50%",
+            "sugar": "50%"
+          }
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "code": "NB-20231118-103",
+      "orderType": "table",
+      "tableNumber": "A2",
+      "note": "",
+      "status": "done",
+      "total": 111000,
+      "createdAt": "2023-11-18T14:40:00.000Z",
+      "items": [
+        {
+          "productId": 2,
+          "name": "Espresso Macchiato",
+          "qty": 1,
+          "unitPrice": 45000,
+          "lineTotal": 45000,
+          "options": {
+            "size": "S",
+            "ice": "0%",
+            "sugar": "0%"
+          }
+        },
+        {
+          "productId": 6,
+          "name": "Caramel Frappé",
+          "qty": 1,
+          "unitPrice": 59000,
+          "lineTotal": 59000,
+          "options": {
+            "size": "M",
+            "ice": "70%",
+            "sugar": "70%"
+          }
+        },
+        {
+          "productId": 9,
+          "name": "Bánh Tiramisu Cacao",
+          "qty": 1,
+          "unitPrice": 72000,
+          "lineTotal": 72000,
+          "options": {}
+        }
+      ]
+    }
+  ]
+}
