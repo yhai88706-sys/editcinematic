@@ -7,6 +7,7 @@
   <link rel="stylesheet" href="assets/css/style.css" />
 </head>
 <body class="dark">
+  <div class="toast-stack" id="toastStack"></div>
   <div class="page">
     <header class="app-header">
       <div class="logo-block">
@@ -120,14 +121,21 @@
     </div>
   </div>
 
-  <div class="modal success" id="successModal" aria-hidden="true">
+  <button class="cart-toggle" id="cartToggleBtn">🛒 Xem giỏ hàng</button>
+  <div class="cart-overlay" id="cartOverlay"></div>
+
+  <div class="modal success" id="feedbackModal" aria-hidden="true">
     <div class="modal-content">
       <div class="modal-body">
-        <h3>🎉 Đặt món thành công</h3>
-        <p>Mã đơn: <strong id="successOrderCode"></strong></p>
-        <p>Loại đơn: <span id="successOrderType"></span></p>
-        <p>Tổng tiền: <strong id="successOrderTotal"></strong></p>
-        <button class="primary-btn" id="closeSuccessBtn">Đóng</button>
+        <h3 id="feedbackTitle">🎉 Đặt món thành công</h3>
+        <div id="feedbackOrderInfo">
+          <p>Mã đơn: <strong id="successOrderCode"></strong></p>
+          <p>Loại đơn: <span id="successOrderType"></span></p>
+          <p class="table-line" id="successOrderTable"></p>
+          <p>Tổng tiền: <strong id="successOrderTotal"></strong></p>
+        </div>
+        <p id="feedbackMessage" class="feedback-message"></p>
+        <button class="primary-btn" id="closeFeedbackBtn">Đóng</button>
       </div>
     </div>
   </div>

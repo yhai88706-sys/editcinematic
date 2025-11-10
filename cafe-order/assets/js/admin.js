@@ -7,6 +7,9 @@ const state = {
   filteredOrders: [],
   selectedOrderId: null,
   filterStatus: 'all',
+  knownNewOrderIds: new Set(),
+  highlightedOrderIds: new Set(),
+  hasLoadedOnce: false,
 };
 
 const elements = {
@@ -15,6 +18,7 @@ const elements = {
   statusFilters: document.getElementById('statusFilters'),
   refreshBtn: document.getElementById('refreshBtn'),
   lastUpdated: document.getElementById('lastUpdated'),
+  toastStack: document.getElementById('toastStack'),
 };
 
 function formatCurrency(value) {
@@ -27,6 +31,23 @@ function formatDateTime(isoString) {
     hour: '2-digit',
     minute: '2-digit',
   })}`;
+}
+
+const MESSAGE_TIMEOUT = 4500;
+const HIGHLIGHT_DURATION = 3000;
+let audioContext = null;
+
+function showMessage(type, text) {
+  if (!elements.toastStack) return;
+  const toast = document.createElement('div');
+  toast.className = `toast ${type}`;
+  toast.textContent = text;
+  elements.toastStack.appendChild(toast);
+  requestAnimationFrame(() => toast.classList.add('visible'));
+  setTimeout(() => {
+    toast.classList.remove('visible');
+    setTimeout(() => toast.remove(), 300);
+  }, MESSAGE_TIMEOUT);
 }
 
 function init() {
@@ -64,12 +85,62 @@ async function fetchOrders() {
     if (!response.ok) {
       throw new Error('Không thể tải đơn hàng');
     }
-    state.orders = await response.json();
+    const data = await response.json();
+    state.orders = data;
+    const latestNewIds = data
+      .filter((order) => order.status === 'new')
+      .map((order) => String(order.id));
+    const unseen = latestNewIds.filter((id) => !state.knownNewOrderIds.has(id));
+    state.knownNewOrderIds = new Set(latestNewIds);
     applyFilter();
+    if (state.hasLoadedOnce && unseen.length) {
+      triggerNewOrderFeedback(unseen);
+    }
+    state.hasLoadedOnce = true;
     updateTimestamp();
   } catch (error) {
     console.error(error);
     elements.ordersList.innerHTML = '<div class="empty">Không thể tải đơn. Kiểm tra server JSON.</div>';
+    showMessage('warning', '⚠ Không kết nối được máy chủ. Vui lòng báo cho quản lý.');
+  }
+}
+
+function triggerNewOrderFeedback(orderIds) {
+  if (!orderIds.length) return;
+  playBeep();
+  orderIds.forEach((id) => {
+    state.highlightedOrderIds.add(id);
+    setTimeout(() => {
+      state.highlightedOrderIds.delete(id);
+      renderOrdersList();
+    }, HIGHLIGHT_DURATION);
+  });
+  renderOrdersList();
+}
+
+function playBeep() {
+  try {
+    if (!audioContext) {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      audioContext = new AudioCtx();
+    }
+    if (audioContext.state === 'suspended') {
+      audioContext.resume();
+    }
+    const now = audioContext.currentTime;
+    const oscillator = audioContext.createOscillator();
+    const gainNode = audioContext.createGain();
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(880, now);
+    gainNode.gain.setValueAtTime(0.0001, now);
+    gainNode.gain.exponentialRampToValueAtTime(0.2, now + 0.02);
+    gainNode.gain.exponentialRampToValueAtTime(0.0001, now + 0.4);
+    oscillator.connect(gainNode);
+    gainNode.connect(audioContext.destination);
+    oscillator.start(now);
+    oscillator.stop(now + 0.4);
+  } catch (error) {
+    console.error('Không thể phát âm thanh thông báo:', error);
   }
 }
 
@@ -112,7 +183,9 @@ function renderOrdersList() {
   state.filteredOrders.forEach((order) => {
     const article = document.createElement('article');
     const orderId = String(order.id);
-    article.className = `order-card${orderId === state.selectedOrderId ? ' active' : ''}`;
+    const isActive = orderId === state.selectedOrderId;
+    const isHighlighted = state.highlightedOrderIds.has(orderId);
+    article.className = `order-card${isActive ? ' active' : ''}${isHighlighted ? ' highlight' : ''}`;
     article.innerHTML = `
       <div class="top-row">
         <span class="code">${order.code || 'Đơn #' + order.id}</span>
@@ -138,6 +211,7 @@ function statusLabel(status) {
     new: 'Mới',
     making: 'Đang pha',
     done: 'Hoàn thành',
+    cancelled: 'Đã hủy',
   };
   return map[status] || status;
 }
@@ -155,7 +229,9 @@ function renderOrderDetail(order) {
       if (item.options?.ice) options.push(`Đá ${item.options.ice}`);
       if (item.options?.sugar) options.push(`Đường ${item.options.sugar}`);
       const optionsText = options.length ? options.join(' · ') : 'Tuỳ chọn mặc định';
-      const noteText = item.options?.note ? `<div class="note">Ghi chú: ${item.options.note}</div>` : '';
+      const noteText = item.options?.note
+        ? `<div class="note accent-note">Ghi chú món: ${item.options.note}</div>`
+        : '';
       return `
         <div class="order-item">
           <div class="name">${item.qty} × ${item.name}</div>
@@ -167,7 +243,7 @@ function renderOrderDetail(order) {
     })
     .join('');
 
-  const noteHtml = order.note ? `<div class="order-note">Ghi chú đơn: ${order.note}</div>` : '';
+  const noteHtml = order.note ? `<div class="order-note accent-note">Ghi chú đơn: ${order.note}</div>` : '';
   const actionsHtml = renderActions(order);
 
   elements.orderDetail.innerHTML = `
@@ -186,6 +262,9 @@ function renderOrderDetail(order) {
 function renderActions(order) {
   if (order.status === 'done') {
     return '<div class="empty">Đơn đã hoàn thành 🎉</div>';
+  }
+  if (order.status === 'cancelled') {
+    return '<div class="empty">Đơn đã được hủy</div>';
   }
 
   let buttonLabel = '';
@@ -215,7 +294,7 @@ function handleActionClick(event) {
   const orderId = button.dataset.id;
   const status = button.dataset.status;
   if (!orderId) {
-    alert('Không xác định được đơn hàng để cập nhật.');
+    showMessage('warning', '⚠ Không xác định được đơn hàng để cập nhật.');
     return;
   }
   updateOrderStatus(orderId, status);
@@ -233,15 +312,19 @@ async function updateOrderStatus(orderId, status) {
     if (!response.ok) {
       throw new Error('Không thể cập nhật trạng thái');
     }
-    await fetchOrders();
-    const updatedOrder = state.orders.find((order) => String(order.id) === String(orderId));
-    if (updatedOrder) {
-      state.selectedOrderId = String(updatedOrder.id);
-      renderOrderDetail(updatedOrder);
+    const targetIndex = state.orders.findIndex((order) => String(order.id) === String(orderId));
+    if (targetIndex !== -1) {
+      state.orders[targetIndex] = { ...state.orders[targetIndex], status };
+      state.selectedOrderId = String(state.orders[targetIndex].id);
     }
+    state.highlightedOrderIds.delete(String(orderId));
+    state.knownNewOrderIds.delete(String(orderId));
+    showMessage('success', '✅ Đã cập nhật trạng thái đơn.');
+    applyFilter();
+    updateTimestamp();
   } catch (error) {
     console.error(error);
-    alert('Không thể cập nhật trạng thái.');
+    showMessage('error', '❌ Không thể cập nhật trạng thái.');
   }
 }
 
