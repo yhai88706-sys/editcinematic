@@ -1,4 +1,4 @@
-const API_BASE_URL = 'http://localhost:4000';
+const API_BASE_URL = (window.CONFIG && window.CONFIG.API_BASE_URL) || 'http://localhost:4000';
 
 const state = {
   products: [],
@@ -134,6 +134,7 @@ function bindEvents() {
   if (elements.cartOverlay) {
     elements.cartOverlay.addEventListener('click', closeCartPanel);
   }
+  document.addEventListener('keydown', handleHotkeys);
 }
 
 async function fetchProducts() {
@@ -143,7 +144,12 @@ async function fetchProducts() {
       throw new Error('Không thể tải sản phẩm');
     }
     const data = await response.json();
-    state.products = data.filter((item) => item.isActive !== false);
+    state.products = data
+      .filter((item) => item.isActive !== false)
+      .map((item) => ({
+        ...item,
+        isPopular: item.isPopular === true,
+      }));
     deriveCategories();
     applyFilters();
   } catch (error) {
@@ -155,7 +161,7 @@ async function fetchProducts() {
 
 function deriveCategories() {
   const categories = new Set(state.products.map((product) => product.category));
-  state.categories = ['all', ...Array.from(categories)];
+  state.categories = ['all', 'popular', ...Array.from(categories)];
   renderCategoryChips();
 }
 
@@ -177,6 +183,7 @@ function formatCategoryName(category) {
     iceblend: 'Đá xay',
     cake: 'Bánh',
     smoothie: 'Sinh tố',
+    popular: '⭐ Bán chạy',
   };
   return mapping[category] || category;
 }
@@ -200,9 +207,13 @@ function applyFilters() {
   const activeCategory = activeCategoryButton ? activeCategoryButton.dataset.category : 'all';
 
   state.filteredProducts = state.products.filter((product) => {
-    const matchCategory = activeCategory === 'all' || product.category === activeCategory;
+    const matchPopular = activeCategory === 'popular' ? product.isPopular : true;
+    const matchCategory =
+      activeCategory === 'all' || activeCategory === 'popular'
+        ? true
+        : product.category === activeCategory;
     const matchSearch = product.name.toLowerCase().includes(searchTerm);
-    return matchCategory && matchSearch;
+    return matchCategory && matchSearch && matchPopular;
   });
 
   renderProducts();
@@ -219,7 +230,8 @@ function renderProducts() {
     const card = document.createElement('article');
     card.className = 'product-card';
     card.innerHTML = `
-      <div>
+      ${product.isPopular ? '<span class="popular-badge" title="Món bán chạy">⭐</span>' : ''}
+      <div class="product-card-header">
         <h4>${product.name}</h4>
         <div class="price">${formatCurrency(product.price)}</div>
       </div>
@@ -556,6 +568,21 @@ function resetCart() {
   renderCart();
   if (state.isCartOpen) {
     closeCartPanel();
+  }
+}
+
+function handleHotkeys(event) {
+  if (event.repeat || event.metaKey || event.ctrlKey || event.altKey) return;
+  const targetTag = event.target && event.target.tagName;
+  if (targetTag === 'INPUT' || targetTag === 'TEXTAREA') return;
+  if (window.matchMedia('(pointer: coarse)').matches) return; // Phím tắt chỉ hoạt động ở desktop
+  const index = Number.parseInt(event.key, 10);
+  if (!Number.isNaN(index) && index >= 1 && index <= 9) {
+    const product = state.filteredProducts[index - 1];
+    if (product) {
+      event.preventDefault();
+      openProductModal(product);
+    }
   }
 }
 

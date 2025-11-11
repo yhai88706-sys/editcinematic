@@ -1,7 +1,8 @@
-const API_BASE_URL = 'http://localhost:4000';
-const AUTO_REFRESH_INTERVAL = 8000;
+const API_BASE_URL = (window.CONFIG && window.CONFIG.API_BASE_URL) || 'http://localhost:4000';
+const AUTO_REFRESH_INTERVAL = (window.CONFIG && window.CONFIG.REFRESH_INTERVAL_MS) || 8000;
 const MESSAGE_TIMEOUT = 4500;
 const HIGHLIGHT_DURATION = 3000;
+const ENABLE_BEEP = !window.CONFIG || window.CONFIG.ENABLE_BEEP !== false;
 let autoRefreshTimer = null;
 let audioContext = null;
 
@@ -23,6 +24,18 @@ const elements = {
   lastUpdated: document.getElementById('staffLastUpdated'),
   toastStack: document.getElementById('toastStack'),
 };
+
+function getTodayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function toDateKey(isoString) {
+  return typeof isoString === 'string' ? isoString.slice(0, 10) : '';
+}
+
+function isToday(isoString) {
+  return toDateKey(isoString) === getTodayKey();
+}
 
 function formatCurrency(value) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
@@ -82,8 +95,7 @@ async function fetchOrders() {
       throw new Error('Không thể tải đơn');
     }
     const data = await response.json();
-    const todayStr = new Date().toISOString().slice(0, 10);
-    const todaysOrders = data.filter((order) => (order.createdAt || '').slice(0, 10) === todayStr);
+    const todaysOrders = data.filter((order) => isToday(order.createdAt));
     state.orders = todaysOrders;
 
     const latestNewIds = todaysOrders.filter((order) => order.status === 'new').map((order) => String(order.id));
@@ -106,7 +118,9 @@ async function fetchOrders() {
 
 function triggerNewOrderFeedback(orderIds) {
   if (!orderIds.length) return;
-  playBeep();
+  if (ENABLE_BEEP) {
+    playBeep();
+  }
   orderIds.forEach((id) => {
     state.highlightedOrderIds.add(id);
     setTimeout(() => {
@@ -294,6 +308,10 @@ function handleActionClick(event) {
 }
 
 async function updateOrderStatus(orderId, status) {
+  if (!['making', 'done'].includes(status)) {
+    console.warn('Trạng thái không được phép trên màn hình nhân viên:', status);
+    return;
+  }
   try {
     const response = await fetch(`${API_BASE_URL}/orders/${encodeURIComponent(orderId)}`, {
       method: 'PATCH',

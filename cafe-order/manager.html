@@ -42,6 +42,10 @@
             <button class="chip" id="managerRefreshBtn">🔄 Làm mới</button>
             <span class="timestamp">Cập nhật: <span id="managerLastUpdated">--</span></span>
           </div>
+          <div class="admin-filters" id="managerDateFilters">
+            <button class="chip active" data-range="today">Hôm nay</button>
+            <button class="chip" data-range="all">Xem tất cả</button>
+          </div>
           <div class="admin-filters" id="managerStatusFilters">
             <button class="chip active" data-status="all">Tất cả</button>
             <button class="chip" data-status="new">Mới</button>
@@ -123,8 +127,16 @@
         </div>
       </section>
     </main>
+    <section class="debug-panel is-hidden" id="debugPanel">
+      <h3>Debug / System Info</h3>
+      <p class="debug-hint">Nhấn Ctrl+D (hoặc Alt+D) để bật/tắt khu vực này.</p>
+      <div id="debugContent">
+        <p>Chưa có dữ liệu.</p>
+      </div>
+    </section>
   </div>
 
+  <script src="assets/js/config.js"></script>
   <script src="assets/js/manager.js"></script>
 </body>
 </html>

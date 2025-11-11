@@ -7,7 +7,8 @@
       "category": "coffee",
       "description": "Robusta rang đậm, pha phin truyền thống với đá mát lạnh",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": true
     },
     {
       "id": 2,
@@ -16,7 +17,8 @@
       "category": "coffee",
       "description": "Cà phê phin hoà cùng sữa đặc béo thơm chuẩn vị Việt",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": true
     },
     {
       "id": 3,
@@ -25,7 +27,8 @@
       "category": "coffee",
       "description": "Espresso hòa quyện sữa hạnh nhân, hương vani dịu nhẹ",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": false
     },
     {
       "id": 4,
@@ -34,7 +37,8 @@
       "category": "coffee",
       "description": "Cold brew ủ lạnh 18 giờ, hậu vị cam vàng và quế nướng",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": false
     },
     {
       "id": 5,
@@ -43,7 +47,8 @@
       "category": "tea",
       "description": "Trà đen ủ lạnh kết hợp đào ngọt, cam vàng và sả tươi",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": true
     },
     {
       "id": 6,
@@ -52,7 +57,8 @@
       "category": "tea",
       "description": "Trà lài thơm dịu, pha mật ong hoa rừng và lát chanh vàng",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": false
     },
     {
       "id": 7,
@@ -61,7 +67,8 @@
       "category": "tea",
       "description": "Trà xanh thanh mát, topping vải tươi và bạc hà the mát",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": false
     },
     {
       "id": 8,
@@ -70,7 +77,8 @@
       "category": "tea",
       "description": "Trà oolong ngọt hậu, dâu tươi và hạt chia giàu chất xơ",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": false
     },
     {
       "id": 9,
@@ -79,7 +87,8 @@
       "category": "iceblend",
       "description": "Đá xay caramel béo mịn cùng kem tươi và vụn caramel",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": true
     },
     {
       "id": 10,
@@ -88,7 +97,8 @@
       "category": "iceblend",
       "description": "Matcha Nhật Bản xay cùng cookie giòn và kem béo",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": false
     },
     {
       "id": 11,
@@ -97,7 +107,8 @@
       "category": "iceblend",
       "description": "Socola đen kết hợp bạc hà mát lạnh và kem tươi nhẹ",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": false
     },
     {
       "id": 12,
@@ -106,7 +117,8 @@
       "category": "cake",
       "description": "Cheesecake nướng mềm mịn, vị phô mai béo nhẹ",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": true
     },
     {
       "id": 13,
@@ -115,7 +127,8 @@
       "category": "cake",
       "description": "Tiramisu espresso với lớp cacao phủ đậm đà",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": false
     },
     {
       "id": 14,
@@ -124,7 +137,8 @@
       "category": "cake",
       "description": "Lớp mousse chanh dây chua nhẹ trên đế biscuit giòn",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": false
     },
     {
       "id": 15,
@@ -133,7 +147,8 @@
       "category": "smoothie",
       "description": "Sinh tố xoài dứa tươi 100%, không thêm đường",
       "image": "",
-      "isActive": true
+      "isActive": true,
+      "isPopular": false
     }
   ],
   "orders": [

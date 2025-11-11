@@ -1,8 +1,11 @@
-const API_BASE_URL = 'http://localhost:4000';
-const AUTO_REFRESH_INTERVAL = 8000;
+const API_BASE_URL = (window.CONFIG && window.CONFIG.API_BASE_URL) || 'http://localhost:4000';
+const AUTO_REFRESH_INTERVAL = (window.CONFIG && window.CONFIG.REFRESH_INTERVAL_MS) || 8000;
 const MESSAGE_TIMEOUT = 4500;
 const HIGHLIGHT_DURATION = 3000;
-const MANAGER_PIN = '2580';
+const MANAGER_PIN = (window.CONFIG && window.CONFIG.MANAGER_PIN) || '2580';
+const ENABLE_BEEP = !window.CONFIG || window.CONFIG.ENABLE_BEEP !== false;
+const DEBUG_STALE_THRESHOLD_MS =
+  (window.CONFIG && window.CONFIG.DEBUG_STALE_THRESHOLD_MS) || 30000;
 const MAX_PIN_ATTEMPTS = 3;
 let autoRefreshTimer = null;
 let audioContext = null;
@@ -12,11 +15,14 @@ const state = {
   filteredOrders: [],
   selectedOrderId: null,
   filterStatus: 'all',
+  dateFilter: 'today',
   knownNewOrderIds: new Set(),
   highlightedOrderIds: new Set(),
   hasLoadedOnce: false,
   products: [],
   editingProductId: null,
+  lastFetchAt: null,
+  debugVisible: false,
 };
 
 const elements = {
@@ -30,6 +36,7 @@ const elements = {
   ordersPanel: document.getElementById('ordersPanel'),
   menuPanel: document.getElementById('menuPanel'),
   statsPanel: document.getElementById('statsPanel'),
+  dateFilters: document.getElementById('managerDateFilters'),
   statusFilters: document.getElementById('managerStatusFilters'),
   refreshBtn: document.getElementById('managerRefreshBtn'),
   lastUpdated: document.getElementById('managerLastUpdated'),
@@ -46,7 +53,21 @@ const elements = {
   productsList: document.getElementById('productsList'),
   statsOrdersToday: document.getElementById('statsOrdersToday'),
   statsRevenueToday: document.getElementById('statsRevenueToday'),
+  debugPanel: document.getElementById('debugPanel'),
+  debugContent: document.getElementById('debugContent'),
 };
+
+function getTodayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function toDateKey(isoString) {
+  return typeof isoString === 'string' ? isoString.slice(0, 10) : '';
+}
+
+function isToday(isoString) {
+  return toDateKey(isoString) === getTodayKey();
+}
 
 function formatCurrency(value) {
   return new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(value || 0);
@@ -106,6 +127,9 @@ function initManager() {
 }
 
 function bindEvents() {
+  if (elements.dateFilters) {
+    elements.dateFilters.addEventListener('click', handleDateFilterClick);
+  }
   elements.statusFilters.addEventListener('click', handleStatusFilterClick);
   elements.refreshBtn.addEventListener('click', () => fetchOrders());
   elements.orderDetail.addEventListener('click', handleOrderActionClick);
@@ -113,6 +137,7 @@ function bindEvents() {
   elements.productForm.addEventListener('submit', handleProductSubmit);
   elements.cancelEditBtn.addEventListener('click', resetProductForm);
   elements.productsList.addEventListener('click', handleProductListClick);
+  document.addEventListener('keydown', handleDebugToggle);
 }
 
 function handleTabClick(event) {
@@ -143,6 +168,7 @@ async function fetchOrders() {
     }
     const data = await response.json();
     state.orders = data;
+    state.lastFetchAt = new Date();
     const latestNewIds = data.filter((order) => order.status === 'new').map((order) => String(order.id));
     const unseen = latestNewIds.filter((id) => !state.knownNewOrderIds.has(id));
     state.knownNewOrderIds = new Set(latestNewIds);
@@ -153,6 +179,7 @@ async function fetchOrders() {
     }
     state.hasLoadedOnce = true;
     updateTimestamp();
+    updateDebugPanel();
   } catch (error) {
     console.error(error);
     elements.ordersList.innerHTML = '<div class="empty">Không thể tải đơn. Kiểm tra JSON Server.</div>';
@@ -162,7 +189,9 @@ async function fetchOrders() {
 
 function triggerNewOrderFeedback(orderIds) {
   if (!orderIds.length) return;
-  playBeep();
+  if (ENABLE_BEEP) {
+    playBeep();
+  }
   orderIds.forEach((id) => {
     state.highlightedOrderIds.add(id);
     setTimeout(() => {
@@ -174,6 +203,7 @@ function triggerNewOrderFeedback(orderIds) {
 }
 
 function playBeep() {
+  if (!ENABLE_BEEP) return;
   try {
     if (!audioContext) {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -208,11 +238,25 @@ function handleStatusFilterClick(event) {
   applyFilter();
 }
 
+function handleDateFilterClick(event) {
+  const button = event.target.closest('button[data-range]');
+  if (!button) return;
+  state.dateFilter = button.dataset.range;
+  elements.dateFilters.querySelectorAll('.chip').forEach((chip) => chip.classList.remove('active'));
+  button.classList.add('active');
+  applyFilter();
+}
+
 function applyFilter() {
+  let working = [...state.orders];
+  if (state.dateFilter === 'today') {
+    working = working.filter((order) => isToday(order.createdAt));
+  }
+
   if (state.filterStatus === 'all') {
-    state.filteredOrders = [...state.orders];
+    state.filteredOrders = working;
   } else {
-    state.filteredOrders = state.orders.filter((order) => order.status === state.filterStatus);
+    state.filteredOrders = working.filter((order) => order.status === state.filterStatus);
   }
   renderOrdersList();
   const selected = state.orders.find((order) => String(order.id) === state.selectedOrderId);
@@ -222,6 +266,7 @@ function applyFilter() {
     state.selectedOrderId = null;
     elements.orderDetail.innerHTML = '<div class="empty">Chọn một đơn để xem chi tiết</div>';
   }
+  updateDebugPanel();
 }
 
 function renderOrdersList() {
@@ -374,6 +419,7 @@ async function updateOrderStatus(orderId, status) {
     applyFilter();
     updateStats();
     showMessage('success', '✅ Đã cập nhật trạng thái đơn.');
+    updateDebugPanel();
   } catch (error) {
     console.error(error);
     showMessage('warning', '⚠ Không kết nối được máy chủ. Vui lòng báo cho quản lý.');
@@ -563,14 +609,54 @@ function renderProductsList() {
 
 function updateStats() {
   if (!elements.statsOrdersToday || !elements.statsRevenueToday) return;
-  const todayStr = new Date().toISOString().slice(0, 10);
-  const todayOrders = state.orders.filter((order) => (order.createdAt || '').slice(0, 10) === todayStr);
+  const todayOrders = state.orders.filter((order) => isToday(order.createdAt));
   const revenue = todayOrders.reduce((sum, order) => {
     if (order.status === 'cancelled') return sum;
     return sum + Number(order.total || 0);
   }, 0);
   elements.statsOrdersToday.textContent = todayOrders.length;
   elements.statsRevenueToday.textContent = formatCurrency(revenue);
+}
+
+function updateDebugPanel() {
+  if (!elements.debugPanel || !elements.debugContent) return;
+  const lastFetchAt = state.lastFetchAt;
+  const lastFetchText = lastFetchAt
+    ? lastFetchAt.toLocaleTimeString('vi-VN', { hour: '2-digit', minute: '2-digit', second: '2-digit' })
+    : '--';
+  const counts = { new: 0, making: 0, done: 0, cancelled: 0 };
+  state.orders.forEach((order) => {
+    if (counts.hasOwnProperty(order.status)) {
+      counts[order.status] += 1;
+    }
+  });
+  const rows = [
+    `<li>New: <strong>${counts.new}</strong></li>`,
+    `<li>Making: <strong>${counts.making}</strong></li>`,
+    `<li>Done: <strong>${counts.done}</strong></li>`,
+    `<li>Cancelled: <strong>${counts.cancelled}</strong></li>`,
+  ].join('');
+  const stale =
+    !lastFetchAt || Date.now() - lastFetchAt.getTime() > DEBUG_STALE_THRESHOLD_MS;
+  const warning = stale
+    ? '<p class="debug-warning">⚠ Có thể JSON Server đang tắt hoặc mất kết nối.</p>'
+    : '';
+  elements.debugContent.innerHTML = `
+    <p>Lần fetch gần nhất: <strong>${lastFetchText}</strong></p>
+    <ul>${rows}</ul>
+    ${warning}
+  `;
+}
+
+function handleDebugToggle(event) {
+  if (!elements.debugPanel) return;
+  if (elements.app && elements.app.classList.contains('is-hidden')) return;
+  if ((event.ctrlKey || event.altKey) && event.key.toLowerCase() === 'd') {
+    event.preventDefault();
+    state.debugVisible = !state.debugVisible;
+    elements.debugPanel.classList.toggle('is-hidden', !state.debugVisible);
+    updateDebugPanel();
+  }
 }
 
 document.addEventListener('DOMContentLoaded', setupPinGate);
