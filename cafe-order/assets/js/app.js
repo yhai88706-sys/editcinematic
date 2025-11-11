@@ -23,6 +23,7 @@ const elements = {
   tableInputWrap: document.getElementById('tableInputWrap'),
   tableNumber: document.getElementById('tableNumber'),
   cartOrderType: document.getElementById('cartOrderType'),
+  cartOrderNote: document.getElementById('cartOrderNote'),
   confirmOrderBtn: document.getElementById('confirmOrderBtn'),
   productModal: document.getElementById('productModal'),
   closeModal: document.getElementById('closeModal'),
@@ -50,6 +51,9 @@ function formatCurrency(value) {
 }
 
 const MESSAGE_TIMEOUT = 4500;
+const DUPLICATE_WINDOW_MS = 5000;
+let lastOrderSignature = null;
+let lastOrderTime = 0;
 
 function showMessage(type, text) {
   if (!elements.toastStack) return;
@@ -70,11 +74,32 @@ function showMessage(type, text) {
   }, MESSAGE_TIMEOUT);
 }
 
+function updateCartOrderInfo() {
+  if (elements.cartOrderType) {
+    const label =
+      state.orderType === 'table'
+        ? `🪑 Tại bàn${state.tableNumber ? ` #${state.tableNumber}` : ''}`
+        : '🥤 Mang đi';
+    elements.cartOrderType.textContent = label;
+  }
+  if (elements.cartOrderNote) {
+    const noteText = state.note.trim();
+    if (noteText) {
+      elements.cartOrderNote.textContent = `Ghi chú: ${noteText}`;
+      elements.cartOrderNote.style.display = 'block';
+    } else {
+      elements.cartOrderNote.textContent = '';
+      elements.cartOrderNote.style.display = 'none';
+    }
+  }
+}
+
 function init() {
   elements.tableInputWrap.style.display = 'none';
   bindEvents();
   fetchProducts();
   renderCart();
+  updateCartOrderInfo();
 }
 
 function bindEvents() {
@@ -84,6 +109,11 @@ function bindEvents() {
   elements.confirmOrderBtn.addEventListener('click', handleConfirmOrder);
   elements.orderNote.addEventListener('input', (e) => {
     state.note = e.target.value;
+    updateCartOrderInfo();
+  });
+  elements.tableNumber.addEventListener('input', (e) => {
+    state.tableNumber = e.target.value.trim();
+    updateCartOrderInfo();
   });
   elements.closeModal.addEventListener('click', hideProductModal);
   elements.productModal.addEventListener('click', (event) => {
@@ -313,6 +343,7 @@ function renderCart() {
 
   updateCartSummary();
 
+  updateCartOrderInfo();
   updateCartToggleLabel();
 }
 
@@ -373,13 +404,13 @@ function handleOrderTypeToggle(event) {
   if (type === 'table') {
     elements.tableInputWrap.style.display = 'flex';
     elements.tableNumber.focus();
-    elements.cartOrderType.textContent = '🪑 Tại bàn';
   } else {
     elements.tableInputWrap.style.display = 'none';
     elements.tableNumber.value = '';
     state.tableNumber = '';
-    elements.cartOrderType.textContent = '🥤 Mang đi';
   }
+
+  updateCartOrderInfo();
 }
 
 function validateOrder() {
@@ -396,6 +427,7 @@ function validateOrder() {
       return false;
     }
     state.tableNumber = tableNumber;
+    updateCartOrderInfo();
   }
 
   return true;
@@ -426,6 +458,10 @@ function buildOrderPayload() {
   };
 }
 
+function getOrderSignature(order) {
+  return [order.orderType, order.tableNumber || '', order.total].join('|');
+}
+
 function generateOrderCode(date = new Date()) {
   const yyyy = date.getFullYear();
   const mm = String(date.getMonth() + 1).padStart(2, '0');
@@ -440,10 +476,19 @@ function generateOrderCode(date = new Date()) {
 async function handleConfirmOrder() {
   if (!validateOrder()) return;
 
+  const payload = buildOrderPayload();
+  const signature = getOrderSignature(payload);
+  const now = Date.now();
+  if (lastOrderSignature === signature && now - lastOrderTime <= DUPLICATE_WINDOW_MS) {
+    showMessage('warning', '⚠ Đơn này vừa được gửi. Vui lòng chờ trong giây lát.');
+    return;
+  }
+
   elements.confirmOrderBtn.disabled = true;
   elements.confirmOrderBtn.textContent = 'Đang gửi...';
 
-  const payload = buildOrderPayload();
+  lastOrderSignature = signature;
+  lastOrderTime = now;
 
   try {
     const response = await fetch(`${API_BASE_URL}/orders`, {
@@ -462,7 +507,9 @@ async function handleConfirmOrder() {
   } catch (error) {
     console.error(error);
     showFeedbackModal('error');
-    showMessage('error', '❌ Không gửi được đơn. Vui lòng thử lại.');
+    showMessage('error', '❌ Không gửi được đơn. Thử lại.');
+    lastOrderSignature = null;
+    lastOrderTime = 0;
   } finally {
     elements.confirmOrderBtn.disabled = false;
     elements.confirmOrderBtn.textContent = 'Xác nhận order';
@@ -488,10 +535,10 @@ function showFeedbackModal(type, order) {
     }
     elements.successOrderTotal.textContent = formatCurrency(order.total);
   } else {
-    elements.feedbackTitle.textContent = '❌ Không gửi được đơn';
+    elements.feedbackTitle.textContent = '❌ Không gửi được đơn. Thử lại.';
     elements.feedbackOrderInfo.style.display = 'none';
-    elements.feedbackMessage.textContent = 'Vui lòng thử lại hoặc báo cho quản lý.';
-    elements.feedbackMessage.style.display = 'block';
+    elements.feedbackMessage.textContent = '';
+    elements.feedbackMessage.style.display = 'none';
   }
   elements.feedbackModal.setAttribute('aria-hidden', 'false');
 }

@@ -362,6 +362,14 @@ h1 {
   border-radius: var(--radius-small);
 }
 
+.order-summary-note {
+  margin-top: 10px;
+  font-size: 13px;
+  color: var(--accent-note);
+  font-weight: 500;
+  display: none;
+}
+
 .cart-items {
   flex: 1;
   display: flex;
@@ -652,6 +660,7 @@ h1 {
   border-color: rgba(92, 108, 255, 0.6);
   box-shadow: 0 0 0 2px rgba(92, 108, 255, 0.25);
   transform: translateY(-4px);
+  background: rgba(59, 130, 246, 0.16);
   animation: highlightPulse 1.2s ease-in-out infinite alternate;
 }
 
