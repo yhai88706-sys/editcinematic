@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Night Brew Cafe · Quản lý</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="dark admin manager-page">
+  <div class="toast-stack" id="toastStack"></div>
+
+  <div class="pin-overlay" id="pinGate">
+    <div class="pin-card">
+      <h2>Đăng nhập quản lý</h2>
+      <p>Nhập mã PIN để truy cập giao diện quản lý</p>
+      <form id="pinForm">
+        <input type="password" id="pinInput" placeholder="Mã PIN" autocomplete="off" required />
+        <button type="submit" class="primary-btn">Mở khóa</button>
+        <p class="pin-error" id="pinError"></p>
+      </form>
+    </div>
+  </div>
+
+  <div class="page admin-page is-hidden" id="managerApp">
+    <header class="admin-header manager-header">
+      <div>
+        <h1>Night Brew Cafe · Quản lý</h1>
+        <p>Theo dõi đơn hàng, quản lý menu và thống kê</p>
+      </div>
+    </header>
+
+    <nav class="manager-tabs" id="managerTabs">
+      <button class="tab-btn active" data-panel="orders">Đơn hàng</button>
+      <button class="tab-btn" data-panel="menu">Menu</button>
+      <button class="tab-btn" data-panel="stats">Thống kê</button>
+    </nav>
+
+    <main class="manager-panels">
+      <section class="tab-panel active" id="ordersPanel">
+        <div class="panel-header">
+          <div class="refresh-controls">
+            <button class="chip" id="managerRefreshBtn">🔄 Làm mới</button>
+            <span class="timestamp">Cập nhật: <span id="managerLastUpdated">--</span></span>
+          </div>
+          <div class="admin-filters" id="managerDateFilters">
+            <button class="chip active" data-range="today">Hôm nay</button>
+            <button class="chip" data-range="all">Xem tất cả</button>
+          </div>
+          <div class="admin-filters" id="managerStatusFilters">
+            <button class="chip active" data-status="all">Tất cả</button>
+            <button class="chip" data-status="new">Mới</button>
+            <button class="chip" data-status="making">Đang pha</button>
+            <button class="chip" data-status="done">Hoàn thành</button>
+            <button class="chip" data-status="cancelled">Đã hủy</button>
+          </div>
+        </div>
+        <div class="admin-layout">
+          <section class="orders-list" id="managerOrdersList">
+            <div class="empty">Đang tải đơn...</div>
+          </section>
+          <aside class="order-detail" id="managerOrderDetail">
+            <div class="empty">Chọn một đơn để xem chi tiết</div>
+          </aside>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="menuPanel">
+        <div class="manager-section">
+          <div class="section-header">
+            <div>
+              <h2>Quản lý menu</h2>
+              <p>Thêm, chỉnh sửa, kích hoạt hoặc ẩn món</p>
+            </div>
+          </div>
+          <form id="productForm" class="product-form">
+            <div class="form-grid">
+              <div class="form-field">
+                <label for="productName">Tên món</label>
+                <input type="text" id="productName" required placeholder="Ví dụ: Cold Brew" />
+              </div>
+              <div class="form-field">
+                <label for="productPrice">Giá (VND)</label>
+                <input type="number" id="productPrice" required min="0" step="1000" />
+              </div>
+              <div class="form-field">
+                <label for="productCategory">Loại</label>
+                <input type="text" id="productCategory" required placeholder="coffee / tea / cake..." />
+              </div>
+              <div class="form-field">
+                <label for="productDescription">Mô tả ngắn</label>
+                <textarea id="productDescription" rows="2" placeholder="Mô tả (tuỳ chọn)"></textarea>
+              </div>
+              <div class="form-field checkbox-field">
+                <label>
+                  <input type="checkbox" id="productIsActive" checked /> Đang bán
+                </label>
+              </div>
+            </div>
+            <div class="form-actions">
+              <button type="submit" class="primary-btn" id="productSubmitBtn">Thêm món</button>
+              <button type="button" class="secondary-btn is-hidden" id="cancelEditBtn">Hủy chỉnh sửa</button>
+            </div>
+          </form>
+        </div>
+
+        <div class="manager-section">
+          <h3>Danh sách món</h3>
+          <div class="product-list" id="productsList">
+            <div class="empty">Đang tải menu...</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="tab-panel" id="statsPanel">
+        <div class="manager-section">
+          <h2>Thống kê nhanh</h2>
+          <div class="stats-grid">
+            <div class="stat-card">
+              <span class="stat-label">Tổng đơn hôm nay</span>
+              <span class="stat-value" id="statsOrdersToday">0</span>
+            </div>
+            <div class="stat-card">
+              <span class="stat-label">Doanh thu hôm nay</span>
+              <span class="stat-value" id="statsRevenueToday">0₫</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+    <section class="debug-panel is-hidden" id="debugPanel">
+      <h3>Debug / System Info</h3>
+      <p class="debug-hint">Nhấn Ctrl+D (hoặc Alt+D) để bật/tắt khu vực này.</p>
+      <div id="debugContent">
+        <p>Chưa có dữ liệu.</p>
+      </div>
+    </section>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/manager.js"></script>
+</body>
+</html>
