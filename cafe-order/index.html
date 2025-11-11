@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Night Brew Cafe · Order</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="dark">
+  <div class="toast-stack" id="toastStack"></div>
+  <div class="page">
+    <header class="app-header">
+      <div class="logo-block">
+        <div class="logo">☕</div>
+        <div>
+          <h1>Night Brew Cafe</h1>
+          <p>Order tại quán · Mang đi hoặc phục vụ tại bàn</p>
+        </div>
+      </div>
+      <div class="order-type-toggle" id="orderTypeToggle">
+        <button class="toggle-btn active" data-type="takeaway">🥤 Mang đi</button>
+        <button class="toggle-btn" data-type="table">🪑 Tại bàn</button>
+      </div>
+      <div class="table-input" id="tableInputWrap">
+        <label for="tableNumber">Số bàn</label>
+        <input type="text" id="tableNumber" placeholder="Nhập số bàn" autocomplete="off" />
+      </div>
+      <nav class="app-shortcuts">
+        <a href="staff.html" class="shortcut-link">Màn hình nhân viên</a>
+        <a href="manager.html" class="shortcut-link">Quản lý</a>
+      </nav>
+    </header>
+
+    <main class="layout">
+      <section class="menu-panel">
+        <div class="search-filter">
+          <div class="search-box">
+            <input type="search" id="searchInput" placeholder="Tìm món..." />
+            <span class="icon">🔍</span>
+          </div>
+          <div class="category-filter" id="categoryFilter">
+            <button class="chip active" data-category="all">Tất cả</button>
+          </div>
+        </div>
+
+        <div class="menu-grid" id="menuGrid">
+          <div class="empty">Đang tải menu...</div>
+        </div>
+      </section>
+
+      <aside class="cart-panel">
+        <div class="cart-header">
+          <h2>Giỏ hàng</h2>
+          <div class="order-summary-line" id="cartOrderType">🥤 Mang đi</div>
+        </div>
+        <div class="order-summary-note" id="cartOrderNote"></div>
+
+        <div class="cart-items" id="cartItems">
+          <div class="empty">Chưa có món nào</div>
+        </div>
+
+        <div class="cart-note">
+          <label for="orderNote">Ghi chú cho đơn</label>
+          <textarea id="orderNote" rows="3" placeholder="Ví dụ: làm ấm, mang thêm ống hút..."></textarea>
+        </div>
+
+        <div class="cart-total" id="cartTotal">
+          <div class="line">
+            <span>Tạm tính</span>
+            <span>0₫</span>
+          </div>
+          <div class="line total">
+            <span>Tổng</span>
+            <span>0₫</span>
+          </div>
+        </div>
+
+        <button class="primary-btn" id="confirmOrderBtn">Xác nhận order</button>
+      </aside>
+    </main>
+  </div>
+
+  <div class="modal" id="productModal" aria-hidden="true">
+    <div class="modal-content">
+      <button class="close-btn" id="closeModal">×</button>
+      <div class="modal-body">
+        <h3 id="modalProductName">Tên món</h3>
+        <p class="modal-desc" id="modalProductDesc"></p>
+        <div class="option-group">
+          <span class="group-label">Size</span>
+          <div class="option-row" data-option="size">
+            <label><input type="radio" name="modalSize" value="S" /> S</label>
+            <label><input type="radio" name="modalSize" value="M" checked /> M</label>
+            <label><input type="radio" name="modalSize" value="L" /> L</label>
+          </div>
+        </div>
+        <div class="option-group">
+          <span class="group-label">Đá</span>
+          <div class="option-row" data-option="ice">
+            <label><input type="radio" name="modalIce" value="0%" /> 0%</label>
+            <label><input type="radio" name="modalIce" value="30%" /> 30%</label>
+            <label><input type="radio" name="modalIce" value="50%" checked /> 50%</label>
+            <label><input type="radio" name="modalIce" value="70%" /> 70%</label>
+            <label><input type="radio" name="modalIce" value="100%" /> 100%</label>
+          </div>
+        </div>
+        <div class="option-group">
+          <span class="group-label">Đường</span>
+          <div class="option-row" data-option="sugar">
+            <label><input type="radio" name="modalSugar" value="0%" /> 0%</label>
+            <label><input type="radio" name="modalSugar" value="30%" /> 30%</label>
+            <label><input type="radio" name="modalSugar" value="50%" checked /> 50%</label>
+            <label><input type="radio" name="modalSugar" value="70%" /> 70%</label>
+            <label><input type="radio" name="modalSugar" value="100%" /> 100%</label>
+          </div>
+        </div>
+        <div class="option-group">
+          <span class="group-label">Ghi chú món</span>
+          <textarea id="modalItemNote" rows="2" placeholder="Ví dụ: ít đá, thêm shot espresso..."></textarea>
+        </div>
+        <div class="modal-footer">
+          <span class="price" id="modalProductPrice">0₫</span>
+          <button class="primary-btn" id="addToCartBtn">Thêm vào giỏ</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <button class="cart-toggle" id="cartToggleBtn">🛒 Xem giỏ hàng</button>
+  <div class="cart-overlay" id="cartOverlay"></div>
+
+  <div class="modal success" id="feedbackModal" aria-hidden="true">
+    <div class="modal-content">
+      <div class="modal-body">
+        <h3 id="feedbackTitle">🎉 Đặt món thành công</h3>
+        <div id="feedbackOrderInfo">
+          <p>Mã đơn: <strong id="successOrderCode"></strong></p>
+          <p>Loại đơn: <span id="successOrderType"></span></p>
+          <p class="table-line" id="successOrderTable"></p>
+          <p>Tổng tiền: <strong id="successOrderTotal"></strong></p>
+        </div>
+        <p id="feedbackMessage" class="feedback-message"></p>
+        <button class="primary-btn" id="closeFeedbackBtn">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/app.js"></script>
+</body>
+</html>
