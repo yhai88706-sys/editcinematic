@@ -52,6 +52,7 @@ const elements = {
   productDescription: document.getElementById('productDescription'),
   productIsActive: document.getElementById('productIsActive'),
   productsList: document.getElementById('productsList'),
+  autoPopularBtn: document.getElementById('autoPopularBtn'),
   statRange: document.getElementById('statRange'),
   statDate: document.getElementById('statDate'),
   statMonth: document.getElementById('statMonth'),
@@ -149,6 +150,9 @@ function bindEvents() {
   elements.productForm.addEventListener('submit', handleProductSubmit);
   elements.cancelEditBtn.addEventListener('click', resetProductForm);
   elements.productsList.addEventListener('click', handleProductListClick);
+  if (elements.autoPopularBtn) {
+    elements.autoPopularBtn.addEventListener('click', handleAutoPopularClick);
+  }
   if (elements.statRange) {
     elements.statRange.addEventListener('change', handleStatRangeChange);
   }
@@ -684,6 +688,19 @@ function handleProductSubmit(event) {
   }
 }
 
+async function handleAutoPopularClick() {
+  if (!elements.autoPopularBtn) return;
+  const originalText = elements.autoPopularBtn.textContent;
+  elements.autoPopularBtn.disabled = true;
+  elements.autoPopularBtn.textContent = 'Đang cập nhật Popular...';
+  try {
+    await updatePopularProducts(5);
+  } finally {
+    elements.autoPopularBtn.disabled = false;
+    elements.autoPopularBtn.textContent = originalText;
+  }
+}
+
 async function createProduct(payload) {
   try {
     const response = await fetch(`${API_BASE_URL}/products`, {
@@ -814,6 +831,73 @@ function renderProductsList() {
       `;
     })
     .join('');
+}
+
+async function updatePopularProducts(topN = 5) {
+  try {
+    const ordersRes = await fetch(`${API_BASE_URL}/orders`);
+    if (!ordersRes.ok) {
+      throw new Error('Không thể tải danh sách đơn');
+    }
+    const orders = await ordersRes.json();
+    const validOrders = orders.filter((order) => order.status !== 'cancelled');
+    const countMap = {};
+    validOrders.forEach((order) => {
+      (order.items || []).forEach((item) => {
+        if (!item || typeof item.productId === 'undefined') return;
+        const qty = Number(item.qty) || 0;
+        if (!qty) return;
+        countMap[item.productId] = (countMap[item.productId] || 0) + qty;
+      });
+    });
+
+    const productsRes = await fetch(`${API_BASE_URL}/products`);
+    if (!productsRes.ok) {
+      throw new Error('Không thể tải danh sách sản phẩm');
+    }
+    const products = await productsRes.json();
+
+    const sorted = [...products]
+      .map((product) => ({
+        ...product,
+        sold: countMap[product.id] || 0,
+      }))
+      .sort((a, b) => b.sold - a.sold);
+
+    const popularIds = sorted
+      .filter((product) => product.sold > 0)
+      .slice(0, topN)
+      .map((product) => product.id);
+
+    const updateRequests = products
+      .map((product) => {
+        const isPopular = popularIds.includes(product.id);
+        if (product.isPopular === isPopular) return null;
+        return fetch(`${API_BASE_URL}/products/${encodeURIComponent(product.id)}`, {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ isPopular }),
+        });
+      })
+      .filter(Boolean);
+
+    if (updateRequests.length) {
+      await Promise.all(updateRequests);
+    }
+
+    state.products = products.map((product) => ({
+      ...product,
+      isPopular: popularIds.includes(product.id),
+    }));
+    renderProductsList();
+
+    const count = popularIds.length;
+    const successMessage = `✅ Đã cập nhật Popular cho ${count} sản phẩm.`;
+    showMessage('success', count ? `${successMessage} Vui lòng reload trang order nếu đang mở.` : successMessage);
+  } catch (error) {
+    console.error(error);
+    showMessage('error', 'Không thể cập nhật Popular. Kiểm tra JSON Server.');
+  }
 }
 
 function updateStats() {
