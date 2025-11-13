@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Night Brew Cafe · Màn hình nhân viên</title>
+  <link rel="stylesheet" href="assets/css/style.css" />
+</head>
+<body class="dark admin staff-page">
+  <div class="toast-stack" id="toastStack"></div>
+  <div class="page admin-page">
+    <header class="admin-header">
+      <div>
+        <h1>Night Brew Cafe · Nhân viên</h1>
+        <p>Xử lý đơn trong ngày cho quầy pha chế</p>
+      </div>
+      <div class="refresh-controls">
+        <button class="chip" id="staffRefreshBtn">🔄 Làm mới</button>
+        <span class="timestamp">Cập nhật: <span id="staffLastUpdated">--</span></span>
+      </div>
+    </header>
+
+    <div class="admin-filters" id="staffStatusFilters">
+      <button class="chip active" data-status="all">Tất cả</button>
+      <button class="chip" data-status="new">Mới</button>
+      <button class="chip" data-status="making">Đang pha</button>
+      <button class="chip" data-status="done">Hoàn thành</button>
+    </div>
+
+    <main class="admin-layout">
+      <section class="orders-list" id="staffOrdersList">
+        <div class="empty">Đang tải đơn hôm nay...</div>
+      </section>
+      <aside class="order-detail" id="staffOrderDetail">
+        <div class="empty">Chọn một đơn để xem chi tiết</div>
+      </aside>
+    </main>
+  </div>
+
+  <script src="assets/js/config.js"></script>
+  <script src="assets/js/staff.js"></script>
+</body>
+</html>

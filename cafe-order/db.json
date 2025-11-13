@@ -1,0 +1,294 @@
+{
+  "products": [
+    {
+      "id": 1,
+      "name": "Cà phê Đen Đá",
+      "price": 39000,
+      "category": "coffee",
+      "description": "Robusta rang đậm, pha phin truyền thống với đá mát lạnh",
+      "image": "",
+      "isActive": true,
+      "isPopular": true
+    },
+    {
+      "id": 2,
+      "name": "Cà phê Sữa Đá",
+      "price": 42000,
+      "category": "coffee",
+      "description": "Cà phê phin hoà cùng sữa đặc béo thơm chuẩn vị Việt",
+      "image": "",
+      "isActive": true,
+      "isPopular": true
+    },
+    {
+      "id": 3,
+      "name": "Latte Hạnh Nhân",
+      "price": 52000,
+      "category": "coffee",
+      "description": "Espresso hòa quyện sữa hạnh nhân, hương vani dịu nhẹ",
+      "image": "",
+      "isActive": true,
+      "isPopular": false
+    },
+    {
+      "id": 4,
+      "name": "Cold Brew Cam Quế",
+      "price": 58000,
+      "category": "coffee",
+      "description": "Cold brew ủ lạnh 18 giờ, hậu vị cam vàng và quế nướng",
+      "image": "",
+      "isActive": true,
+      "isPopular": false
+    },
+    {
+      "id": 5,
+      "name": "Trà Đào Cam Sả",
+      "price": 47000,
+      "category": "tea",
+      "description": "Trà đen ủ lạnh kết hợp đào ngọt, cam vàng và sả tươi",
+      "image": "",
+      "isActive": true,
+      "isPopular": true
+    },
+    {
+      "id": 6,
+      "name": "Trà Lài Mật Ong",
+      "price": 45000,
+      "category": "tea",
+      "description": "Trà lài thơm dịu, pha mật ong hoa rừng và lát chanh vàng",
+      "image": "",
+      "isActive": true,
+      "isPopular": false
+    },
+    {
+      "id": 7,
+      "name": "Trà Vải Bạc Hà",
+      "price": 49000,
+      "category": "tea",
+      "description": "Trà xanh thanh mát, topping vải tươi và bạc hà the mát",
+      "image": "",
+      "isActive": true,
+      "isPopular": false
+    },
+    {
+      "id": 8,
+      "name": "Trà Oolong Dâu",
+      "price": 50000,
+      "category": "tea",
+      "description": "Trà oolong ngọt hậu, dâu tươi và hạt chia giàu chất xơ",
+      "image": "",
+      "isActive": true,
+      "isPopular": false
+    },
+    {
+      "id": 9,
+      "name": "Caramel Frappé",
+      "price": 59000,
+      "category": "iceblend",
+      "description": "Đá xay caramel béo mịn cùng kem tươi và vụn caramel",
+      "image": "",
+      "isActive": true,
+      "isPopular": true
+    },
+    {
+      "id": 10,
+      "name": "Matcha Cookie Frappe",
+      "price": 62000,
+      "category": "iceblend",
+      "description": "Matcha Nhật Bản xay cùng cookie giòn và kem béo",
+      "image": "",
+      "isActive": true,
+      "isPopular": false
+    },
+    {
+      "id": 11,
+      "name": "Socola Bạc Hà Đá Xay",
+      "price": 61000,
+      "category": "iceblend",
+      "description": "Socola đen kết hợp bạc hà mát lạnh và kem tươi nhẹ",
+      "image": "",
+      "isActive": true,
+      "isPopular": false
+    },
+    {
+      "id": 12,
+      "name": "Bánh Cheesecake Nướng",
+      "price": 69000,
+      "category": "cake",
+      "description": "Cheesecake nướng mềm mịn, vị phô mai béo nhẹ",
+      "image": "",
+      "isActive": true,
+      "isPopular": true
+    },
+    {
+      "id": 13,
+      "name": "Bánh Tiramisu Cacao",
+      "price": 72000,
+      "category": "cake",
+      "description": "Tiramisu espresso với lớp cacao phủ đậm đà",
+      "image": "",
+      "isActive": true,
+      "isPopular": false
+    },
+    {
+      "id": 14,
+      "name": "Bánh Mousse Chanh Dây",
+      "price": 68000,
+      "category": "cake",
+      "description": "Lớp mousse chanh dây chua nhẹ trên đế biscuit giòn",
+      "image": "",
+      "isActive": true,
+      "isPopular": false
+    },
+    {
+      "id": 15,
+      "name": "Sinh Tố Xoài Dứa",
+      "price": 52000,
+      "category": "smoothie",
+      "description": "Sinh tố xoài dứa tươi 100%, không thêm đường",
+      "image": "",
+      "isActive": true,
+      "isPopular": false
+    }
+  ],
+  "orders": [
+    {
+      "id": 1,
+      "code": "NB-20240520-091530-204",
+      "orderType": "table",
+      "tableNumber": "B5",
+      "note": "Mang thêm ống hút giấy",
+      "status": "new",
+      "total": 99000,
+      "createdAt": "2024-05-20T09:15:30.000Z",
+      "items": [
+        {
+          "productId": 3,
+          "name": "Latte Hạnh Nhân",
+          "qty": 1,
+          "unitPrice": 52000,
+          "lineTotal": 52000,
+          "options": {
+            "size": "L",
+            "ice": "30%",
+            "sugar": "30%",
+            "note": "Thêm quế"
+          }
+        },
+        {
+          "productId": 5,
+          "name": "Trà Đào Cam Sả",
+          "qty": 1,
+          "unitPrice": 47000,
+          "lineTotal": 47000,
+          "options": {
+            "size": "M",
+            "ice": "50%",
+            "sugar": "50%"
+          }
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "code": "NB-20240520-091200-357",
+      "orderType": "takeaway",
+      "tableNumber": null,
+      "note": "Gọi khách khi xong",
+      "status": "making",
+      "total": 147000,
+      "createdAt": "2024-05-20T09:12:00.000Z",
+      "items": [
+        {
+          "productId": 1,
+          "name": "Cà phê Đen Đá",
+          "qty": 2,
+          "unitPrice": 39000,
+          "lineTotal": 78000,
+          "options": {
+            "size": "M",
+            "ice": "70%",
+            "sugar": "30%",
+            "note": "Để riêng đá"
+          }
+        },
+        {
+          "productId": 12,
+          "name": "Bánh Cheesecake Nướng",
+          "qty": 1,
+          "unitPrice": 69000,
+          "lineTotal": 69000,
+          "options": {}
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "code": "NB-20240519-200415-642",
+      "orderType": "table",
+      "tableNumber": "A2",
+      "note": "",
+      "status": "done",
+      "total": 173000,
+      "createdAt": "2024-05-19T20:04:15.000Z",
+      "items": [
+        {
+          "productId": 2,
+          "name": "Cà phê Sữa Đá",
+          "qty": 1,
+          "unitPrice": 42000,
+          "lineTotal": 42000,
+          "options": {
+            "size": "M",
+            "ice": "50%",
+            "sugar": "50%"
+          }
+        },
+        {
+          "productId": 9,
+          "name": "Caramel Frappé",
+          "qty": 1,
+          "unitPrice": 59000,
+          "lineTotal": 59000,
+          "options": {
+            "size": "M",
+            "ice": "70%",
+            "sugar": "70%"
+          }
+        },
+        {
+          "productId": 13,
+          "name": "Bánh Tiramisu Cacao",
+          "qty": 1,
+          "unitPrice": 72000,
+          "lineTotal": 72000,
+          "options": {}
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "code": "NB-20240518-083000-501",
+      "orderType": "takeaway",
+      "tableNumber": null,
+      "note": "Khách đổi ý",
+      "status": "cancelled",
+      "total": 49000,
+      "createdAt": "2024-05-18T08:30:00.000Z",
+      "items": [
+        {
+          "productId": 7,
+          "name": "Trà Vải Bạc Hà",
+          "qty": 1,
+          "unitPrice": 49000,
+          "lineTotal": 49000,
+          "options": {
+            "size": "M",
+            "ice": "30%",
+            "sugar": "30%"
+          }
+        }
+      ]
+    }
+  ]
+}
