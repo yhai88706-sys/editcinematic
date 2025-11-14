@@ -1,0 +1,34 @@
+/*
+ * Custom stylesheet for the MT5 Robot dashboard.
+ * This file adds spacing, responsive tweaks, and color cues
+ * that work on top of MaterializeCSS defaults.
+ */
+
+body {
+    font-family: 'Roboto', sans-serif;
+}
+
+section {
+    padding-top: 40px;
+    padding-bottom: 40px;
+}
+
+#global-message {
+    font-weight: bold;
+}
+
+#market-summary li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#strategies-list .secondary-content {
+    cursor: pointer;
+}
+
+@media (max-width: 600px) {
+    nav .brand-logo {
+        font-size: 1.3rem;
+    }
+}
