@@ -1,0 +1,9 @@
+Flask
+Flask-Cors
+Flask-SQLAlchemy
+SQLAlchemy
+scikit-learn
+joblib
+numpy
+MetaTrader5
+pytest

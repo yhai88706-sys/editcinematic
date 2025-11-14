@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!-- Meta configuration for responsive Material Design layout -->
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MT5 Trading Robot Control Panel</title>
+    <!-- MaterializeCSS CDN for Material Design components -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <!-- Google Icons for UI clarity -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Local stylesheet for custom overrides -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body class="grey lighten-4">
+    <!-- Global navigation bar -->
+    <nav class="blue darken-2">
+        <div class="nav-wrapper container">
+            <a href="#" class="brand-logo">MT5 Robot</a>
+            <ul id="nav-mobile" class="right hide-on-med-and-down">
+                <li><a href="#auth-section">Auth</a></li>
+                <li><a href="#dashboard-section">Dashboard</a></li>
+                <li><a href="#strategy-section">Strategies</a></li>
+                <li><a href="#history-section">History</a></li>
+                <li><a href="#risk-section">Risk</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Global notification area for API errors -->
+    <section class="section" id="message-section">
+        <div class="container">
+            <div id="global-message" class="card-panel red lighten-4 red-text text-darken-4" style="display:none;"></div>
+        </div>
+    </section>
+
+    <!-- Authentication section with login/register -->
+    <section class="section" id="auth-section">
+        <div class="container">
+            <div class="row">
+                <div class="col s12 m6">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title">Login</span>
+                            <form id="login-form">
+                                <div class="input-field">
+                                    <input id="login-username" type="text" required>
+                                    <label for="login-username">Username</label>
+                                </div>
+                                <div class="input-field">
+                                    <input id="login-password" type="password" required>
+                                    <label for="login-password">Password</label>
+                                </div>
+                                <button class="btn waves-effect waves-light blue" type="submit">Login</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="col s12 m6">
+                    <div class="card">
+                        <div class="card-content">
+                            <span class="card-title">Register</span>
+                            <form id="register-form">
+                                <div class="input-field">
+                                    <input id="register-username" type="text" required>
+                                    <label for="register-username">Username</label>
+                                </div>
+                                <div class="input-field">
+                                    <input id="register-password" type="password" required>
+                                    <label for="register-password">Password</label>
+                                </div>
+                                <button class="btn waves-effect waves-light green" type="submit">Register</button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Dashboard section showing live market data and trade status -->
+    <section class="section" id="dashboard-section">
+        <div class="container">
+            <h4>Dashboard</h4>
+            <div class="row">
+                <div class="col s12">
+                    <ul class="collection" id="market-summary">
+                        <!-- Filled dynamically with REST data -->
+                    </ul>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col s12">
+                    <table class="highlight responsive-table">
+                        <thead>
+                            <tr>
+                                <th>Symbol</th>
+                                <th>Bid</th>
+                                <th>Ask</th>
+                                <th>Time</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ticks-table">
+                            <!-- Market tick data -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Strategy management section -->
+    <section class="section" id="strategy-section">
+        <div class="container">
+            <h4>Strategies</h4>
+            <form id="strategy-form">
+                <div class="input-field">
+                    <input id="strategy-name" type="text" required>
+                    <label for="strategy-name">Strategy Name</label>
+                </div>
+                <div class="input-field">
+                    <textarea id="strategy-params" class="materialize-textarea" required></textarea>
+                    <label for="strategy-params">Parameters (JSON)</label>
+                </div>
+                <button class="btn waves-effect waves-light" type="submit">Add Strategy</button>
+            </form>
+            <ul class="collection" id="strategies-list">
+                <!-- Strategy items -->
+            </ul>
+        </div>
+    </section>
+
+    <!-- Trade history section -->
+    <section class="section" id="history-section">
+        <div class="container">
+            <h4>Trade History</h4>
+            <table class="striped responsive-table">
+                <thead>
+                    <tr>
+                        <th>Time</th>
+                        <th>Symbol</th>
+                        <th>Type</th>
+                        <th>Volume</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+                <tbody id="history-table">
+                    <!-- Past trades -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+
+    <!-- Risk settings and health check section -->
+    <section class="section" id="risk-section">
+        <div class="container">
+            <h4>Risk Settings &amp; Health</h4>
+            <form id="risk-form">
+                <div class="input-field">
+                    <input id="max-drawdown" type="number" min="0" step="0.1" required>
+                    <label for="max-drawdown">Max Drawdown (%)</label>
+                </div>
+                <div class="input-field">
+                    <input id="max-position" type="number" min="0" step="0.1" required>
+                    <label for="max-position">Max Position Size (lots)</label>
+                </div>
+                <button class="btn waves-effect waves-light" type="submit">Save Risk</button>
+            </form>
+            <div class="card">
+                <div class="card-content">
+                    <span class="card-title">System Health</span>
+                    <p id="health-status">Pending check...</p>
+                </div>
+                <div class="card-action">
+                    <button id="health-check-btn" class="btn blue">Refresh Health</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer for branding -->
+    <footer class="page-footer blue darken-2">
+        <div class="container">
+            <div class="row">
+                <div class="col s12">
+                    <h5 class="white-text">MT5 Robot Control</h5>
+                    <p class="grey-text text-lighten-4">Full-stack monitoring dashboard with strategy, history, and risk configuration.</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Materialize JavaScript for UI behaviors -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/js/materialize.min.js"></script>
+    <!-- Local application logic -->
+    <script src="app.js"></script>
+</body>
+</html>
